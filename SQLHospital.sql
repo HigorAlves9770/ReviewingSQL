@@ -1,9 +1,8 @@
--- Criar banco
 CREATE DATABASE hospital_db;
 USE hospital_db;
 
 
--- Tabela de pacientes
+
 CREATE TABLE pacientes (
     paciente_id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50),
@@ -14,13 +13,13 @@ CREATE TABLE pacientes (
     email VARCHAR(50)
 );
 
--- Tabela de especialidades médicas
+
 CREATE TABLE especialidades (
     especialidade_id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50)
 );
 
--- Tabela de médicos
+
 CREATE TABLE medicos (
     medico_id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50),
@@ -32,7 +31,7 @@ CREATE TABLE medicos (
 );
 
 
--- Tabela de consultas
+
 CREATE TABLE consultas (
     consulta_id INT AUTO_INCREMENT PRIMARY KEY,
     paciente_id INT,
@@ -43,7 +42,7 @@ CREATE TABLE consultas (
     FOREIGN KEY (medico_id) REFERENCES medicos(medico_id)
 );
 
--- Tabela de exames
+
 CREATE TABLE exames (
     exame_id INT AUTO_INCREMENT PRIMARY KEY,
     paciente_id INT,
@@ -53,14 +52,14 @@ CREATE TABLE exames (
     FOREIGN KEY (paciente_id) REFERENCES pacientes(paciente_id)
 );
 
--- Tabela de medicamentos
+
 CREATE TABLE medicamentos (
     medicamento_id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50),
     descricao VARCHAR(100)
 );
 
--- Tabela de prescrições
+
 CREATE TABLE prescricoes (
     prescricao_id INT AUTO_INCREMENT PRIMARY KEY,
     paciente_id INT,
@@ -71,7 +70,7 @@ CREATE TABLE prescricoes (
     FOREIGN KEY (medicamento_id) REFERENCES medicamentos(medicamento_id)
 );
 
--- Tabela de internações
+
 CREATE TABLE internacoes (
     internacao_id INT AUTO_INCREMENT PRIMARY KEY,
     paciente_id INT,
@@ -82,7 +81,7 @@ CREATE TABLE internacoes (
     FOREIGN KEY (paciente_id) REFERENCES pacientes(paciente_id)
 );
 
--- Tabela pacientes
+
 INSERT INTO pacientes (nome, sobrenome, data_nascimento, sexo, telefone, email) VALUES
 ('Ana','Silva','1985-02-15','F','81999990001','ana.silva@email.com'),
 ('Bruno','Costa','1990-07-22','M','81999990002','bruno.costa@email.com'),
@@ -105,7 +104,7 @@ INSERT INTO pacientes (nome, sobrenome, data_nascimento, sexo, telefone, email) 
 ('Sofia','Nunes','1989-03-28','F','81999990019','sofia.nunes@email.com'),
 ('Tiago','Pinto','1984-06-05','M','81999990020','tiago.pinto@email.com');
 
--- Tabela especialidades
+
 INSERT INTO especialidades (nome) VALUES
 ('Cardiologia'),('Neurologia'),('Pediatria'),('Ortopedia'),
 ('Dermatologia'),('Ginecologia'),('Oftalmologia'),('Endocrinologia'),
@@ -113,7 +112,7 @@ INSERT INTO especialidades (nome) VALUES
 ('Oncologia'),('Otorrinolaringologia'),('Nefrologia'),('Hematologia'),
 ('Cirurgia Geral'),('Cirurgia Plástica'),('Anestesiologia'),('Radiologia');
 
--- Tabela médicos
+
 INSERT INTO medicos (nome,sobrenome,especialidade_id,telefone,email) VALUES
 ('Carlos','Machado',1,'81988880001','carlos.machado@email.com'),
 ('Patrícia','Azevedo',2,'81988880002','patricia.azevedo@email.com'),
@@ -136,7 +135,7 @@ INSERT INTO medicos (nome,sobrenome,especialidade_id,telefone,email) VALUES
 ('Leandro','Moraes',19,'81988880019','leandro.moraes@email.com'),
 ('Bianca','Teixeira',20,'81988880020','bianca.teixeira@email.com');
 
--- Tabela consultas
+
 INSERT INTO consultas (paciente_id, medico_id, data_consulta, motivo) VALUES
 (1,1,'2025-09-01 10:00:00','Check-up'),
 (2,2,'2025-09-02 11:00:00','Dor de cabeça'),
@@ -159,7 +158,6 @@ INSERT INTO consultas (paciente_id, medico_id, data_consulta, motivo) VALUES
 (19,19,'2025-09-19 08:00:00','Anestesia pré-operatória'),
 (20,20,'2025-09-20 14:00:00','Exame de imagem');
 
--- Tabela exames
 INSERT INTO exames (paciente_id,tipo,resultado,data_exame) VALUES
 (1,'Sangue','Normal','2025-08-01'),
 (2,'Tomografia','Alterado','2025-08-02'),
@@ -182,7 +180,6 @@ INSERT INTO exames (paciente_id,tipo,resultado,data_exame) VALUES
 (19,'Pré-anestesia','Aprovado','2025-08-19'),
 (20,'Imagem','Normal','2025-08-20');
 
--- Tabela medicamentos
 INSERT INTO medicamentos (nome,descricao) VALUES
 ('Paracetamol','Analgésico e antipirético'),
 ('Ibuprofeno','Anti-inflamatório'),
@@ -205,7 +202,6 @@ INSERT INTO medicamentos (nome,descricao) VALUES
 ('Omeprazol','Gastrite'),
 ('Azitromicina','Antibiótico');
 
--- Tabela prescricoes
 INSERT INTO prescricoes (paciente_id,medicamento_id,dosagem,data_prescricao) VALUES
 (1,1,'500mg 8/8h','2025-09-01'),
 (2,2,'400mg 12/12h','2025-09-02'),
@@ -228,7 +224,7 @@ INSERT INTO prescricoes (paciente_id,medicamento_id,dosagem,data_prescricao) VAL
 (19,19,'100mg 1x/dia','2025-09-19'),
 (20,20,'500mg 1x/dia','2025-09-20');
 
--- Tabela internações
+
 INSERT INTO internacoes (paciente_id,data_entrada,data_saida,motivo,quarto) VALUES
 (1,'2025-08-01','2025-08-05','Cirurgia','101A'),
 (2,'2025-08-02','2025-08-04','Fratura','102B'),
@@ -418,20 +414,62 @@ SELECT pacientes.nome as Paciente, medicos.nome as Medico, especialidades.nome a
 			WHERE especialidades.nome = 'Pediatria' AND medicamentos.descricao = 'Antibiótico' ;
 
 -- 22. Mostre os médicos e a quantidade de consultas realizadas, mas apenas aqueles que fizeram mais de 2 consultas (HAVING).
+
+SELECT medicos.nome, COUNT(consultas.consulta_id) AS total_consultas
+	FROM consultas
+		INNER JOIN medicos ON consultas.medico_id = medicos.medico_id
+			GROUP BY medicos.medico_id, medicos.nome
+				HAVING COUNT(consultas.consulta_id) > 2;
+
 -- 23. Liste os pacientes internados por mais de 5 dias.
+
+SELECT pacientes.nome, pacientes.sobrenome, internacoes.data_entrada, internacoes.data_saida
+	FROM pacientes
+		INNER JOIN internacoes ON pacientes.paciente_id = internacoes.paciente_id
+			WHERE DATEDIFF(internacoes.data_saida, internacoes.data_entrada) >= 5;
+
 -- 24. Encontre os pacientes que possuem consultas e exames realizados no mesmo dia.
+
+SELECT pacientes.nome AS NomePaciente, 
+	   data_consulta as DataConsulta, 
+       data_exame as DataExame
+FROM pacientes
+	INNER JOIN consultas ON pacientes.paciente_id = consultas.paciente_id
+	INNER JOIN exames ON pacientes.paciente_id = exames.paciente_id
+WHERE consultas.data_consulta = exames.data_exame;
+
 -- 25. Liste o total de consultas por especialidade médica.
--- 26. Liste os pacientes que têm mais de uma prescrição de medicamentos diferentes (DISTINCT).
--- 27. Liste os pacientes que não têm nenhuma prescrição associada.
--- 28. Mostre o nome do paciente, nome do médico e especialidade de todas as consultas em setembro de 2025, ordenadas por data da consulta.
--- 29. Liste os médicos que possuem pacientes internados no momento (data_saida ainda não ocorreu).
--- 30. Encontre todos os pacientes que fizeram mais de 3 exames distintos.
+
+SELECT especialidades.nome, COUNT(consultas.consulta_id) AS TotalConsultas
+	FROM especialidades
+		LEFT JOIN medicos ON especialidades.especialidade_id = medicos.especialidade_id
+        LEFT JOIN consultas ON medicos.medico_id = consultas.medico_id
+			GROUP BY especialidades.nome;
 
 -- 4 Mais Dificil
 
--- 31. Liste os pacientes que nunca fizeram uma consulta, mas possuem exames realizados.
--- 32. Mostre os 3 médicos que mais atenderam pacientes em 2025.
--- 33. Liste os pacientes com mais de uma internação e calcule a média de dias internados.
--- 34. Encontre os medicamentos prescritos que nunca foram usados em exames ou internações associadas ao mesmo paciente.
--- 35. Liste os pacientes e, ao lado, mostre quantas consultas eles tiveram em 2025 e classifique em:
+-- 26. Liste os pacientes que nunca fizeram uma consulta, mas possuem exames realizados.
+
+SELECT pacientes.nome, consultas.data_consulta, exames.tipo
+	FROM pacientes
+		LEFT JOIN consultas ON pacientes.paciente_id = consultas.paciente_id
+        INNER JOIN exames ON pacientes.paciente_id = exames.paciente_id
+			WHERE consultas.paciente_id IS NULL;
+
+-- 27. Mostre os 3 médicos que mais atenderam pacientes em 2025.
+
+SELECT medicos.nome, COUNT(consultas.consulta_id) AS Total_de_Consultas
+	FROM medicos 
+		INNER JOIN consultas ON medicos.medico_id = consultas.medico_id
+			WHERE YEAR (consultas.data_consulta) = 2025
+			GROUP BY medicos.medico_id, medicos.nome
+			ORDER BY Total_de_Consultas DESC
+				LIMIT 3;
+                        
+
+
+
+-- 28. Liste os pacientes com mais de uma internação e calcule a média de dias internados.
+-- 29. Encontre os medicamentos prescritos que nunca foram usados em exames ou internações associadas ao mesmo paciente.
+-- 30. Liste os pacientes e, ao lado, mostre quantas consultas eles tiveram em 2025 e classifique em:
 --     'Baixo Atendimento' (até 2 consultas), 'Médio Atendimento' (3 a 5 consultas), 'Alto Atendimento' (mais de 5 consultas).

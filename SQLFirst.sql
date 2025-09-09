@@ -1,10 +1,8 @@
--- Criar o banco de dados
+
 CREATE DATABASE escola_db;
 USE escola_db;
 
 
-
--- Criar tabela de alunos
 CREATE TABLE alunos (
     aluno_id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50),
@@ -13,14 +11,13 @@ CREATE TABLE alunos (
     nota DECIMAL(3,1)
 );
 
--- Criar tabela de cursos
+
 CREATE TABLE cursos (
     curso_id INT AUTO_INCREMENT PRIMARY KEY,
     nome_curso VARCHAR(100),
     professor VARCHAR(50)
 );
 
--- Criar tabela de matrículas (N:N entre alunos e cursos)
 CREATE TABLE matriculas (
     matricula_id INT AUTO_INCREMENT PRIMARY KEY,
     aluno_id INT,
@@ -30,7 +27,6 @@ CREATE TABLE matriculas (
     FOREIGN KEY (curso_id) REFERENCES cursos(curso_id)
 );
 
--- Inserir alunos (dados mais reais)
 INSERT INTO alunos (nome, sobrenome, data_nascimento, nota) VALUES
 ('Ana', 'Carvalho', '2006-05-22', 8.7),
 ('Lucas', 'Fernandes', '2005-09-14', 9.3),
@@ -40,7 +36,7 @@ INSERT INTO alunos (nome, sobrenome, data_nascimento, nota) VALUES
 ('Rafael', 'Gomes', '2001-03-30', 5.8),
 ('Isabela', 'Rocha', '2000-08-19', 9.0);
 
--- Inserir cursos
+
 INSERT INTO cursos (nome_curso, professor) VALUES
 ('Matemática', 'Prof. Alan Turing'),
 ('Física', 'Prof. Marie Curie'),
@@ -48,7 +44,7 @@ INSERT INTO cursos (nome_curso, professor) VALUES
 ('História', 'Prof. Howard Zinn'),
 ('Química', 'Prof. Antoine Lavoisier');
 
--- Inserir matrículas
+
 INSERT INTO matriculas (aluno_id, curso_id, data_matricula) VALUES
 (1, 1, '2024-02-05'),
 (1, 3, '2024-02-06'),
