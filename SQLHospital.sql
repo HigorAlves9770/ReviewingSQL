@@ -462,14 +462,40 @@ SELECT medicos.nome, COUNT(consultas.consulta_id) AS Total_de_Consultas
 	FROM medicos 
 		INNER JOIN consultas ON medicos.medico_id = consultas.medico_id
 			WHERE YEAR (consultas.data_consulta) = 2025
-			GROUP BY medicos.medico_id, medicos.nome
-			ORDER BY Total_de_Consultas DESC
-				LIMIT 3;
-                        
-
-
+				GROUP BY medicos.medico_id, medicos.nome
+					ORDER BY Total_de_Consultas DESC
+						LIMIT 3;
 
 -- 28. Liste os pacientes com mais de uma internação e calcule a média de dias internados.
+
+SELECT pacientes.nome, COUNT(internacoes.internacao_id) AS TotalInternacoes,
+    AVG(DATEDIFF(internacoes.data_saida, internacoes.data_entrada)) AS MediaDiasInternados
+	FROM pacientes
+		LEFT JOIN internacoes ON pacientes.paciente_id = internacoes.paciente_id
+			GROUP BY pacientes.nome
+				ORDER BY MediaDiasInternados DESC;
+    
 -- 29. Encontre os medicamentos prescritos que nunca foram usados em exames ou internações associadas ao mesmo paciente.
--- 30. Liste os pacientes e, ao lado, mostre quantas consultas eles tiveram em 2025 e classifique em:
+
+SELECT medicamentos.nome, exames.tipo, prescricoes.dosagem
+	FROM medicamentos
+		LEFT JOIN prescricoes ON medicamentos.medicamento_id = prescricoes.medicamento_id
+        LEFT JOIN pacientes ON prescricoes.paciente_id = pacientes.paciente_id
+        LEFT JOIN exames ON pacientes.paciente_id = exames.paciente_id
+        LEFT JOIN internacoes ON pacientes.paciente_id = internacoes.paciente_id
+			WHERE exames.exame_id IS NULL AND internacoes.internacao_id IS NULL;
+
+-- 30.  Liste os pacientes e, ao lado, mostrequantas consultas eles tiveram em 2025 e classifique em:
 --     'Baixo Atendimento' (até 2 consultas), 'Médio Atendimento' (3 a 5 consultas), 'Alto Atendimento' (mais de 5 consultas).
+
+SELECT pacientes.nome, COUNT(consultas.consulta_id) AS TotalConsultas,
+    CASE
+        WHEN COUNT(consultas.consulta_id) <= 2 THEN 'Baixo Atendimento'
+        WHEN COUNT(consultas.consulta_id) BETWEEN 3 AND 5 THEN 'Médio Atendimento'
+        ELSE 'Alto Atendimento'
+    END AS Classificacao
+		FROM pacientes
+			LEFT JOIN consultas ON pacientes.paciente_id = consultas.paciente_id AND YEAR (consultas.data_consulta) = 2025
+				GROUP BY pacientes.nome
+					ORDER BY TotalConsultas DESC;
+
